@@ -9,8 +9,16 @@
 <body>
     <header>
         <nav>
-            <a href="page.html">Home</a>
+            <a href="#">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="shopping.html">Shopping</a>
         </nav>
+        <div class="logo">System Logo</div>
+        <div class="buttons">
+            <a href="signup.html">Sign Up</a>
+            <a href="signin.html">Sign In</a>
+            <a href="cart.html">🛒</a>
+        </div>
         <h1>Shopping</h1>
     </header>
     
@@ -26,6 +34,13 @@
             <h2>Shopping Cart</h2>
             <div id="cart-items"></div>
         </section>
+
+        <script>
+            function addToCart(name, price) {
+               
+                alert(name + " added to cart!");
+            }
+        </script>
     </main>
 </body>
 </html>
