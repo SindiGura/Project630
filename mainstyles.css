@@ -1,0 +1,204 @@
+/* Global Styles */
+body {
+    font-family: 'Lucida Sans';
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Header */
+header {
+    background: #F4E4CB;
+    color: rgb(0, 0, 0);
+    padding: 15px;
+    text-align: center;
+}
+
+/* Navigation */
+/* Global Styles */
+body {
+    top: 100;
+    font-family: 'Lucida Sans', sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Fixed Navigation */
+nav {
+    position: fixed; /* Keep the nav fixed at the top of the screen */
+    top: 10;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Space out the left and center items */
+    align-items: center; /* Vertically center the items */
+    background-color: #4B1B07;
+    padding: 10px;
+    font-weight: bold;
+    z-index: 1000; /* Make sure it stays on top of other content */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Optional: Add shadow for depth */
+}
+
+/* Left Item (e.g., logo or brand name) */
+nav .left-item {
+    flex: 0 0 auto; /* Ensure the left item doesn't shrink or stretch */
+}
+
+/* Center Items */
+nav .center-items {
+    display: flex;
+    justify-content: center; /* Center the items within this container */
+    flex: 1; /* Take up remaining space */
+}
+
+nav a {
+    color: #F4E4CB;
+    text-decoration: none;
+    padding: 10px 20px;
+}
+
+nav a:hover {
+    background: #555;
+}
+
+/* Main Content */
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+main {
+    padding-top: 100px; /* Adds space at the top of the main content */
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Footer */
+footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Buttons */
+button {
+    background: #2868a7;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+button:hover {
+    background: #1f4f7f;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+.hidden {
+    display: none;
+}
+
+/* About Section Styles */
+.about-section {
+    padding: 50px 20px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.about-text h2 {
+    font-size: 28px;
+    color: #4B1B07;
+    margin-bottom: 15px;
+}
+
+.about-text p {
+    font-size: 18px;
+    color: #555;
+}
+
+/* Team Members Section */
+.team-members {
+    display: flex;
+    justify-content: center; /* Center the items */
+    gap: 100px; /* Space between the team members */
+    margin-top: 40px;
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+}
+
+.team-member {
+    text-align: center;
+    max-width: 250px; /* Set a maximum width for each team member card */
+}
+
+.team-member img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.team-member h3 {
+    font-size: 22px;
+    color: #4B1B07;
+    margin-bottom: 10px;
+}
+
+.team-member p {
+    font-size: 16px;
+    color: #777;
+    margin: 5px 0;
+}
+
+/* Sign-In Form Styles */
+form {
+    display: flex; /* Flexbox for centering the form */
+    flex-direction: column; /* Stack the form elements vertically */
+    align-items: center; /* Center the form contents horizontally */
+    justify-content: center; /* Center the form contents vertically */
+    width: 100%;
+    max-width: 400px; /* Limit the form's width */
+    margin: 50px auto; /* Center the form on the page with some space above and below */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Input Textbox Styling */
+input[type="text"],
+input[type="password"] {
+    width: 100%; /* Make the input fields full width */
+    padding: 10px;
+    margin-bottom: 15px; /* Add space between input fields */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline-color: #4B1B07; /* Add a focus outline color */
+}
