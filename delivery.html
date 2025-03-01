@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Route</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyClYvSlHYsrJgaOdeDeSuRtM6ECjyu6qwk&libraries=places"></script>
+    <link rel="stylesheet" href="mainstyles.css">
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="left-item"> 
+                <img src="images/logo3.png" alt="Behind The Counter" width="250" height="150">
+            </div>
+            <div class="center-items">
+                <a href="page.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="shopping.html">Shopping</a>
+                <a href="signup.html">Sign Up</a>
+                <a href="signin.html">Sign In</a>
+                <a href="delivery.html">Delivery</a>
+                <a href="cart.html">🛒</a>
+            </div>
+            
+        </nav>
+        <br><br><br><br><h1>Your Delivery Route</h1>
+    </header>
+    <h2>Select a Branch for Delivery</h2>
+    <select id="branch">
+        <option value="43.6532,-79.3832">Toronto Branch</option>
+        <option value="43.7001,-79.4163">North York Branch</option>
+        <option value="43.5890,-79.6441">Mississauga Branch</option>
+    </select>
+    <br>
+    
+    <input type="text" id="customerAddress" placeholder="Enter delivery address">
+    <button onclick="calculateRoute()">Show Route</button>
+    
+    <div id="map"></div>
+
+    <script>
+        function initMap() {
+            window.map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 43.7, lng: -79.4 }, // Default center
+                zoom: 10
+            });
+            window.directionsService = new google.maps.DirectionsService();
+            window.directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+        }
+
+        function calculateRoute() {
+            const selectedBranch = document.getElementById('branch').value.split(',');
+            const customerAddress = document.getElementById('customerAddress').value;
+
+            if (!customerAddress) {
+                alert("Please enter a delivery address.");
+                return;
+            }
+
+            const origin = new google.maps.LatLng(parseFloat(selectedBranch[0]), parseFloat(selectedBranch[1]));
+
+            const request = {
+                origin: origin,
+                destination: customerAddress,
+                travelMode: 'DRIVING'
+            };
+
+            directionsService.route(request, function(result, status) {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    alert('Error: ' + status);
+                }
+            });
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>
