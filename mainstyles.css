@@ -25,14 +25,14 @@ body {
     color: #333;
 }
 
-/* Fixed Navigation */
+/* Navigation */
 nav {
     position: fixed; /* Keep the nav fixed at the top of the screen */
-    top: 10;
+    top: 0; /* Align to the top of the page */
     left: 0;
     width: 100%;
     display: flex;
-    justify-content: space-between; /* Space out the left and center items */
+    justify-content: center; /* Center all items in the nav */
     align-items: center; /* Vertically center the items */
     background-color: #4B1B07;
     padding: 10px;
@@ -43,14 +43,15 @@ nav {
 
 /* Left Item (e.g., logo or brand name) */
 nav .left-item {
-    flex: 0 0 auto; /* Ensure the left item doesn't shrink or stretch */
+    position: absolute; /* Position it absolutely within the nav */
+    left: 40px; /* Keep it 10px away from the left */
 }
 
 /* Center Items */
 nav .center-items {
     display: flex;
     justify-content: center; /* Center the items within this container */
-    flex: 1; /* Take up remaining space */
+    flex: 1; /* Allow it to take up the remaining space */
 }
 
 nav a {
@@ -155,7 +156,6 @@ img {
 .team-member img {
     width: 150px;
     height: 150px;
-    border-radius: 50%;
     object-fit: cover;
     margin-bottom: 10px;
 }
