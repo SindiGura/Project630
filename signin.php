@@ -1,4 +1,5 @@
 <?php
+session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -20,7 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
         if (password_verify($password, $user["password"])) {
-            session_start();
             $_SESSION["user"] = [
                 "id" => $user["id"],
                 "full_name" => $user["full_name"],
@@ -28,12 +28,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "mailing_address" => $user["mailing_address"],
                 "phone_number" => $user["phone_number"]
             ];
-            echo json_encode(["message" => "Login successful", "user" => $_SESSION["user"]]);
+            header("Location: dashboard.php");
+            exit();
         } else {
-            echo json_encode(["message" => "Invalid credentials"]);
+            // Redirect with error message
+            header("Location: signin.html?error=invalid");
+            exit();
         }
     } else {
-        echo json_encode(["message" => "User not found"]);
+        // Redirect with error message
+        header("Location: signin.html?error=invalid");
+        exit();
     }
 }
 
