@@ -14,14 +14,16 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $full_name = $_POST["full_name"];
+    $full_name = $_POST["name"];
     $email = $_POST["email"];
-    $mailing_address = $_POST["mailing_address"];
-    $phone_number = $_POST["phone_number"];
-    $password = password_hash($_POST["password"], PASSWORD_DEFAULT); // Secure password
+    $tel = $_POST["tel"];
+    $address = $_POST["address"];
+    $city_code = $_POST["city_code"];
+    $login_id = $_POST["login_id"];
+    $passcode = password_hash($_POST["passcode"], PASSWORD_DEFAULT); // Secure password
 
-    $sql = "INSERT INTO users (full_name, email, mailing_address, phone_number, password) 
-            VALUES ('$full_name', '$email', '$mailing_address', '$phone_number', '$password')";
+    $sql = "INSERT INTO users (name, email, tel, address, city_code, login_id, passcode) 
+            VALUES ('$name', '$email', '$tel', '$address', '$city_code', '$login_id', '$passcode')";
 
 if ($conn->query($sql) === TRUE) {
     header("Location: signin.html?signup=success");
