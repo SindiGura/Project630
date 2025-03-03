@@ -21,48 +21,83 @@
                 <a href="signin.html">Sign In</a>
                 <a href="delivery.html">Delivery</a>
                 <a href="cart.html">
-                 <div class="icon-cart"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
-                  </svg>
-                  <span>0</span>
-                  </div>
+                    <div class="icon-cart">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
+                        </svg>
+                        <span id="cart-count">0</span> <!-- Cart count will update dynamically -->
+                    </div>
                 </a>
             </div>
-            
         </nav>
         <br><br><br><br><h1>Product List</h1>
     </header>
     
     <main>
-            <h2>Product List</h2>
-            <div class="listProduct">
+        <h2>Product List</h2>
+        <div class="listProduct">
             <div class="item">
-            <img src="images/blender.jpg" alt="Blender">
-            <h2>Blender</h2>
-            <div class="price">$40</div>
-            <button class="addToCart">Add to cart</button></div>
+                <img src="images/blender.jpg" alt="Blender">
+                <h2>Blender</h2>
+                <div class="price">$40</div>
+                <button class="addToCart" data-name="Blender" data-price="40">Add to cart</button>
+            </div>
             <div class="item">
-                <img src="images/toaster.png" alt="Blender">
+                <img src="images/toaster.png" alt="Toaster">
                 <h2>Toaster</h2>
                 <div class="price">$60</div>
-                <button class="addToCart">Add to cart</button></div>
-                <div class="item">
-                    <img src="images/coffee.png" alt="Blender">
-                    <h2>Coffee</h2>
-                    <div class="price">$50</div>
-                    <button class="addToCart">Add to cart</button></div>
-                    <div class="item">
-                        <img src="images/knife.png" alt="Blender">
-                        <h2>Knife</h2>
-                        <div class="price">$20</div>
-                        <button class="addToCart">Add to cart</button></div>
-
-        <script>
-            function addToCart(name, price) {
-               
-                alert(name + " added to cart!");
-            }
-        </script>
+                <button class="addToCart" data-name="Toaster" data-price="60">Add to cart</button>
+            </div>
+            <div class="item">
+                <img src="images/coffee.png" alt="Coffee">
+                <h2>Coffee</h2>
+                <div class="price">$50</div>
+                <button class="addToCart" data-name="Coffee" data-price="50">Add to cart</button>
+            </div>
+            <div class="item">
+                <img src="images/knife.png" alt="Knife">
+                <h2>Knife</h2>
+                <div class="price">$20</div>
+                <button class="addToCart" data-name="Knife" data-price="20">Add to cart</button>
+            </div>
+        </div>
     </main>
+
+    <script>
+        // Function to load cart count from localStorage
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            document.getElementById("cart-count").textContent = cart.length;
+        }
+
+        // Function to add items to the cart
+        function addToCart(event) {
+            const button = event.target;
+            const itemName = button.getAttribute("data-name");
+            const itemPrice = button.getAttribute("data-price");
+
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            // Add item to cart
+            cart.push({ name: itemName, price: itemPrice });
+
+            // Save back to localStorage
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            // Update cart count
+            updateCartCount();
+
+            // Alert user
+            alert(itemName + " added to cart!");
+        }
+
+        // Attach event listeners to all "Add to Cart" buttons
+        document.querySelectorAll(".addToCart").forEach(button => {
+            button.addEventListener("click", addToCart);
+        });
+
+        // Load cart count on page load
+        updateCartCount();
+    </script>
 </body>
 </html>

@@ -19,56 +19,45 @@
                 <a href="signup.html">Sign Up</a>
                 <a href="signin.html">Sign In</a>
                 <a href="delivery.html">Delivery</a>
-                <a href="cart.html">🛒</a>
             </div>
-            
         </nav>
-        <br><br><br><br><h1>Shopping Cart</h1>
-    </header>
-
-    <main>
-        <table>
-            <tr>
-                <th>Item</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-            </tr>
-            <tr>
-                <td>Product 1</td>
-                <td>$10</td>
-                <td><input type="number" value="1"></td>
-                <td>$10</td>
-            </tr>
-        </table>
-
-        <button>Checkout</button>
-    </main>
-    
-
+    </header><br><br>
+     <div><br>
+    <h1>Your Cart</h1>
+    <div id="cart-items"></div>
+    <button id="checkout" class="btn btn-success">Proceed to Checkout</button>
+</div>
     <script>
         function loadCart() {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            let cartTable = document.getElementById("cart-table");
-            let total = 0;
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const cartContainer = document.getElementById("cart-items");
 
-            cart.forEach(item => {
-                let row = cartTable.insertRow();
-                row.insertCell(0).innerText = item.name;
-                row.insertCell(1).innerText = "$" + item.price;
-                total += item.price;
+            if (cart.length === 0) {
+                cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+                return;
+            }
+
+            cartContainer.innerHTML = "";
+            cart.forEach((item, index) => {
+                const itemElement = document.createElement("div");
+                itemElement.innerHTML = `<p>${item.name} - $${item.price} 
+                    <button onclick="removeItem(${index})">Remove</button></p>`;
+                cartContainer.appendChild(itemElement);
             });
-
-            document.getElementById("total").innerText = total;
         }
 
-        function clearCart() {
-            localStorage.removeItem("cart");
-            location.reload();
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.splice(index, 1); // Remove item at given index
+            localStorage.setItem("cart", JSON.stringify(cart));
+            loadCart(); // Reload the cart
         }
 
-        window.onload = loadCart;
+        document.getElementById("checkout").addEventListener("click", function() {
+            alert("Proceeding to checkout! (Feature can be added later)");
+        });
+
+        loadCart();
     </script>
-    
 </body>
 </html>
