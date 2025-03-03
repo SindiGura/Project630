@@ -14,6 +14,9 @@
             <div class="left-item"> 
                 <img src="images/logo3.png" alt="Behind The Counter" width="250" height="150">
             </div>
+            <div class="left-item"> 
+                <img src="images/logo3.png" alt="Behind The Counter" width="250" height="150">
+            </div>
             <div class="center-items">
                 <a href="page.php">Home</a>
                 <a href="about.php">About Us</a>
@@ -35,10 +38,11 @@
                     <a href="signin.html">Sign In</a>
                 <?php endif; ?>
             </div>
+                </a>
+            </div>
         </nav>
+        <br><br><br><br><h1>Product List</h1>
     </header>
-
-    <h1>Product List</h1>
     
     <main>
         <h2>Product List</h2>
@@ -69,5 +73,42 @@
             </div>
         </div>
     </main>
+
+    <script>
+        // Function to load cart count from localStorage
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            document.getElementById("cart-count").textContent = cart.length;
+        }
+
+        // Function to add items to the cart
+        function addToCart(event) {
+            const button = event.target;
+            const itemName = button.getAttribute("data-name");
+            const itemPrice = button.getAttribute("data-price");
+
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            // Add item to cart
+            cart.push({ name: itemName, price: itemPrice });
+
+            // Save back to localStorage
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            // Update cart count
+            updateCartCount();
+
+            // Alert user
+            alert(itemName + " added to cart!");
+        }
+
+        // Attach event listeners to all "Add to Cart" buttons
+        document.querySelectorAll(".addToCart").forEach(button => {
+            button.addEventListener("click", addToCart);
+        });
+
+        // Load cart count on page load
+        updateCartCount();
+    </script>
 </body>
 </html>
