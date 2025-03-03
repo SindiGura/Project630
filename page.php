@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Page</title>
     <link rel="stylesheet" href="mainstyles.css">
-   
 </head>
 <body>
     <header>
@@ -40,7 +39,14 @@
         <br><br><br><img src="images/logo.png" alt="Behind The Counter" width="250" height="250">
     </header>
     <main>
-        <h1>Welcome</h1>
+        <h1>Welcome to Behind The Counter!</h1>
+        
+        <div class="home-buttons">
+            <a href="shopping.php" class="btn">Start Shopping</a>
+            <a href="about.php" class="btn">Learn About Us</a>
+            <a href="delivery.php" class="btn">Delivery Information</a>
+        </div>
+        
     </main>
 </body>
 </html>

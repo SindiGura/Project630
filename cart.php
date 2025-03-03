@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="mainstyles.css">
+    
 </head>
 <body>
     <header>
@@ -26,7 +27,6 @@
                         <span id="cart-count">0</span>
                     </div>
                 </a>
-
                 <?php if (isset($_SESSION['user'])): ?>
                     <a href="logout.php">Log Out</a>
                 <?php else: ?>
@@ -35,42 +35,83 @@
                 <?php endif; ?>
             </div>
         </nav>
-    </header><br><br>
-     <div><br>
-    <h1>Your Cart</h1>
-    <div id="cart-items"></div>
-    <button id="checkout" class="btn btn-success">Proceed to Checkout</button>
-</div>
+        <br><br><br><br><h1>Your Cart</h1>
+    </header>
+    
+    <main>
+        <div>
+            <table id="cart-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                    <!-- Cart items will appear here -->
+                </tbody>
+            </table>
+
+            <button id="checkout" class="btn btn-success" disabled>Proceed to Checkout</button>
+        </div>
+    </main>
+
     <script>
+        // Function to load items from the cart
         function loadCart() {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
             const cartContainer = document.getElementById("cart-items");
+            const cartCount = document.getElementById("cart-count");
 
+            // If the cart is empty, show a message
             if (cart.length === 0) {
-                cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+                cartContainer.innerHTML = "<tr><td colspan='5'>Your cart is empty.</td></tr>";
+                document.getElementById("checkout").disabled = true; // Disable checkout if the cart is empty
+                cartCount.textContent = 0;
                 return;
             }
 
+            // Clear any previous content
             cartContainer.innerHTML = "";
+
+            // Display all items in the cart
             cart.forEach((item, index) => {
-                const itemElement = document.createElement("div");
-                itemElement.innerHTML = `<p>${item.name} - $${item.price} 
-                    <button onclick="removeItem(${index})">Remove</button></p>`;
-                cartContainer.appendChild(itemElement);
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>$${item.price}</td>
+                    <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                    <td><button class="remove-btn" onclick="removeItem(${index})">Remove</button></td>
+                `;
+                cartContainer.appendChild(row);
             });
+
+            // Update cart count
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            cartCount.textContent = totalItems;
+
+            // Enable checkout if the cart has items
+            document.getElementById("checkout").disabled = false;
         }
 
+        // Function to remove an item from the cart
         function removeItem(index) {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            cart.splice(index, 1); // Remove item at given index
+            cart.splice(index, 1); // Remove the item at the given index
             localStorage.setItem("cart", JSON.stringify(cart));
-            loadCart(); // Reload the cart
+            loadCart(); // Reload the cart after item is removed
         }
 
+        // Checkout button handler
         document.getElementById("checkout").addEventListener("click", function() {
-            alert("Proceeding to checkout! (Feature can be added later)");
+            window.location.href = "payments.php";
         });
 
+        // Load the cart when the page loads
         loadCart();
     </script>
 </body>

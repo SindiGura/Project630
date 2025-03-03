@@ -1,0 +1,70 @@
+-- User Table
+CREATE TABLE Users (
+    User_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Tel_No VARCHAR(15) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Address TEXT NOT NULL,
+    City_Code VARCHAR(10) NOT NULL,
+    Login_Id VARCHAR(50) UNIQUE NOT NULL,
+    Password VARCHAR(255) NOT NULL, 
+);
+
+-- Shopping Table (MUST be created before Orders because Orders references it)
+CREATE TABLE Shopping (
+    Receipt_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Store_Code VARCHAR(50) NOT NULL,
+    Total_Price DECIMAL(10,2) NOT NULL
+);
+
+-- Truck Table (MUST be created before Trips)
+CREATE TABLE Trucks (
+    Truck_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Truck_Code VARCHAR(50) UNIQUE NOT NULL,
+    Availability_Code VARCHAR(20) NOT NULL
+);
+
+-- Trip Table (MUST be created before Orders)
+CREATE TABLE Trips (
+    Trip_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Source_Code VARCHAR(10) NOT NULL,
+    Destination_Code VARCHAR(10) NOT NULL,
+    Distance_KM DECIMAL(10,2) NOT NULL,
+    Truck_Id INT NOT NULL,
+    Price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (Truck_Id) REFERENCES Trucks(Truck_Id) ON DELETE CASCADE
+);
+
+-- Order Table (Now it correctly references all existing tables)
+CREATE TABLE Orders (
+    Order_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Date_Issued DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Date_Received DATETIME NULL,
+    Total_Price DECIMAL(10,2) NOT NULL,
+    Payment_Code VARCHAR(50) NOT NULL,
+    User_Id INT NOT NULL,
+    Trip_Id INT NOT NULL,
+    Receipt_Id INT NOT NULL,
+    FOREIGN KEY (User_Id) REFERENCES Users(User_Id) ON DELETE CASCADE,
+    FOREIGN KEY (Trip_Id) REFERENCES Trips(Trip_Id) ON DELETE CASCADE,
+    FOREIGN KEY (Receipt_Id) REFERENCES Shopping(Receipt_Id) ON DELETE CASCADE
+);
+
+-- Item Table
+CREATE TABLE Items (
+    Item_Id INT AUTO_INCREMENT PRIMARY KEY,
+    Item_Name VARCHAR(100) NOT NULL,
+    Price DECIMAL(10,2) NOT NULL,
+    Made_In VARCHAR(50),
+    Department_Code VARCHAR(20) NOT NULL
+);
+
+-- Order_Items Table (Many-to-Many relationship between Orders and Items)
+CREATE TABLE Order_Items (
+    Order_Id INT NOT NULL,
+    Item_Id INT NOT NULL,
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    PRIMARY KEY (Order_Id, Item_Id),
+    FOREIGN KEY (Order_Id) REFERENCES Orders(Order_Id) ON DELETE CASCADE,
+    FOREIGN KEY (Item_Id) REFERENCES Items(Item_Id) ON DELETE CASCADE
+);

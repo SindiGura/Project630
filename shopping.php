@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php session_start(); ?> 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,9 +11,6 @@
 <body>
     <header>
         <nav>
-            <div class="left-item"> 
-                <img src="images/logo3.png" alt="Behind The Counter" width="250" height="150">
-            </div>
             <div class="left-item"> 
                 <img src="images/logo3.png" alt="Behind The Counter" width="250" height="150">
             </div>
@@ -30,7 +27,6 @@
                         <span id="cart-count">0</span>
                     </div>
                 </a>
-
                 <?php if (isset($_SESSION['user'])): ?>
                     <a href="logout.php">Log Out</a>
                 <?php else: ?>
@@ -38,77 +34,114 @@
                     <a href="signin.html">Sign In</a>
                 <?php endif; ?>
             </div>
-                </a>
-            </div>
         </nav>
         <br><br><br><br><h1>Product List</h1>
     </header>
     
     <main>
+        <div class="cart" id="cart" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="images/cart.png" alt="Cart Icon" />
+            <ul class="cart-items" id="cart-items">
+            </ul>
+        </div>
+
         <h2>Product List</h2>
         <div class="listProduct">
-            <div class="item">
-                <img src="images/blender.jpg" alt="Blender">
-                <h2>Blender</h2>
-                <div class="price">$40</div>
-                <button class="addToCart" data-name="Blender" data-price="40">Add to cart</button>
-            </div>
-            <div class="item">
-                <img src="images/toaster.png" alt="Toaster">
-                <h2>Toaster</h2>
-                <div class="price">$60</div>
-                <button class="addToCart" data-name="Toaster" data-price="60">Add to cart</button>
-            </div>
-            <div class="item">
-                <img src="images/coffee.png" alt="Coffee">
-                <h2>Coffee</h2>
-                <div class="price">$50</div>
-                <button class="addToCart" data-name="Coffee" data-price="50">Add to cart</button>
-            </div>
-            <div class="item">
-                <img src="images/knife.png" alt="Knife">
-                <h2>Knife</h2>
-                <div class="price">$20</div>
-                <button class="addToCart" data-name="Knife" data-price="20">Add to cart</button>
-            </div>
+        <?php
+        
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "ecommerce_db";
+        
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $sql = "SELECT * FROM items";
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0) {
+
+            while($row = $result->fetch_assoc()) {
+                echo '<div class="item" draggable="true" data-id="' . $row["Item_Id"] . '" data-name="' . $row["Item_Name"] . '" data-price="' . $row["Price"] . '" data-image="' . $row["Image_URL"] . '">';
+                echo '<img src="' . $row["Image_URL"] . '" alt="' . $row["Item_Name"] . '" width="200" height="200">'; // Display item image
+                echo '<h2>' . $row["Item_Name"] . '</h2>'; // Display item name
+                echo '<div class="price">$' . $row["Price"] . '</div>'; // Display item price
+                echo '<div class="made-in">Made In: ' . $row["Made_In"] . '</div>'; // Display item origin
+                echo '<div class="department">Department: ' . $row["Department_Code"] . '</div>'; // Display department code
+                echo '</div>';
+            }
+        } else {
+            echo "No items found.";
+        }
+
+        $conn->close();
+        ?>
         </div>
     </main>
 
     <script>
-        // Function to load cart count from localStorage
-        function updateCartCount() {
-            const cart = JSON.parse(localStorage.getItem("cart")) || [];
-            document.getElementById("cart-count").textContent = cart.length;
+        
+        function allowDrop(event) {
+            event.preventDefault();
         }
 
-        // Function to add items to the cart
-        function addToCart(event) {
-            const button = event.target;
-            const itemName = button.getAttribute("data-name");
-            const itemPrice = button.getAttribute("data-price");
+        
+        function drop(event) {
+            event.preventDefault();
 
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            var data = event.dataTransfer.getData("text");
+            var item = JSON.parse(data);
 
-            // Add item to cart
-            cart.push({ name: itemName, price: itemPrice });
+            var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
 
-            // Save back to localStorage
-            localStorage.setItem("cart", JSON.stringify(cart));
+            var itemIndex = cartItems.findIndex(i => i.id === item.id);
+            if (itemIndex === -1) {
+                item.quantity = 1; // If the item is not in the cart, initialize the quantity
+                cartItems.push(item);
+            } else {
+                cartItems[itemIndex].quantity += 1; // If item already exists, increase quantity
+            }
 
-            // Update cart count
-            updateCartCount();
+            localStorage.setItem("cart", JSON.stringify(cartItems));
 
-            // Alert user
-            alert(itemName + " added to cart!");
+            updateCartUI();
         }
 
-        // Attach event listeners to all "Add to Cart" buttons
-        document.querySelectorAll(".addToCart").forEach(button => {
-            button.addEventListener("click", addToCart);
+        // Update the cart count and display items
+        function updateCartUI() {
+            const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+            const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0); // Sum of all quantities
+            document.getElementById("cart-count").textContent = cartCount;
+
+            const cartItemsList = document.getElementById("cart-items");
+            cartItemsList.innerHTML = ''; 
+
+            cartItems.forEach(item => {
+                const li = document.createElement("li");
+                li.innerHTML = `${item.name} - $${item.price} x ${item.quantity}`;
+                cartItemsList.appendChild(li);
+            });
+        }
+
+        // Make items draggable
+        document.querySelectorAll(".item").forEach(item => {
+            item.addEventListener("dragstart", (event) => {
+                const itemData = {
+                    id: event.target.getAttribute("data-id"),
+                    name: event.target.getAttribute("data-name"),
+                    price: event.target.getAttribute("data-price"),
+                    image: event.target.getAttribute("data-image")
+                };
+                event.dataTransfer.setData("text", JSON.stringify(itemData));
+            });
         });
 
         // Load cart count on page load
-        updateCartCount();
+        updateCartUI();
     </script>
 </body>
 </html>

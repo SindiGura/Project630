@@ -43,12 +43,11 @@
         <section class="about-section">
             <div class="about-text">
                 <h2>Our Team</h2>
-                <p>gskdhgskjdfh</p>
             </div>
             
             <div class="team-members">
                 <div class="team-member">
-                    <img src="images/member1.jpg" alt="Sindi Gurakuqi">
+                    <img src="images/member1.jpg" alt="Sindi Gurakuqi" width="100" height="100">
                     <h3>Sindi Gurakuqi</h3>
                     <p>sgurakuqi@torontomu.ca</p>
                 </div>

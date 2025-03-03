@@ -45,57 +45,69 @@
         </nav>
         <br><br><br><br><h1>Your Delivery Route</h1>
     </header>
-    <h2>Select a Branch for Delivery</h2>
-    <select id="branch">
-        <option value="43.6532,-79.3832">Toronto Branch</option>
-        <option value="43.7001,-79.4163">North York Branch</option>
-        <option value="43.5890,-79.6441">Mississauga Branch</option>
-    </select>
-    <br>
+
+    <main>
+        <h2>Select a Branch for Delivery</h2>
+        <select id="branch">
+            <option value="43.6532,-79.3832">Toronto Branch</option>
+            <option value="43.7001,-79.4163">North York Branch</option>
+            <option value="43.5890,-79.6441">Mississauga Branch</option>
+        </select>
+        <br><br>
+        
+        <input type="text" id="customerAddress" placeholder="Enter delivery address">
+        <button onclick="calculateRoute()">Show Route</button><br><br>
+        
+        <div id="map"></div>
     
-    <input type="text" id="customerAddress" placeholder="Enter delivery address">
-    <button onclick="calculateRoute()">Show Route</button>
+        
+        <br>
+        <button id="checkoutBtn">Proceed to Checkout</button>
     
-    <div id="map"></div>
-
-    <script>
-        function initMap() {
-            window.map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: 43.7, lng: -79.4 }, // Default center
-                zoom: 10
-            });
-            window.directionsService = new google.maps.DirectionsService();
-            window.directionsRenderer = new google.maps.DirectionsRenderer();
-            directionsRenderer.setMap(map);
-        }
-
-        function calculateRoute() {
-            const selectedBranch = document.getElementById('branch').value.split(',');
-            const customerAddress = document.getElementById('customerAddress').value;
-
-            if (!customerAddress) {
-                alert("Please enter a delivery address.");
-                return;
+        <script>
+            function initMap() {
+                window.map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 43.7, lng: -79.4 }, 
+                    zoom: 10
+                });
+                window.directionsService = new google.maps.DirectionsService();
+                window.directionsRenderer = new google.maps.DirectionsRenderer();
+                directionsRenderer.setMap(map);
             }
-
-            const origin = new google.maps.LatLng(parseFloat(selectedBranch[0]), parseFloat(selectedBranch[1]));
-
-            const request = {
-                origin: origin,
-                destination: customerAddress,
-                travelMode: 'DRIVING'
-            };
-
-            directionsService.route(request, function(result, status) {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(result);
-                } else {
-                    alert('Error: ' + status);
+    
+            function calculateRoute() {
+                const selectedBranch = document.getElementById('branch').value.split(',');
+                const customerAddress = document.getElementById('customerAddress').value;
+    
+                if (!customerAddress) {
+                    alert("Please enter a delivery address.");
+                    return;
                 }
+    
+                const origin = new google.maps.LatLng(parseFloat(selectedBranch[0]), parseFloat(selectedBranch[1]));
+    
+                const request = {
+                    origin: origin,
+                    destination: customerAddress,
+                    travelMode: 'DRIVING'
+                };
+    
+                directionsService.route(request, function(result, status) {
+                    if (status === 'OK') {
+                        directionsRenderer.setDirections(result);
+                    } else {
+                        alert('Error: ' + status);
+                    }
+                });
+            }
+    
+            document.getElementById("checkoutBtn").addEventListener("click", function() {
+                window.location.href = "payments.php";
             });
-        }
-
-        window.onload = initMap;
-    </script>
+    
+            window.onload = initMap;
+        </script>
+    </main>
+    
 </body>
 </html>

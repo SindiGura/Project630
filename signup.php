@@ -20,16 +20,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = $_POST["address"];
     $city_code = $_POST["city_code"];
     $login_id = $_POST["login_id"];
-    $passcode = password_hash($_POST["passcode"], PASSWORD_DEFAULT); // Secure password
+    $passcode = $_POST["passcode"];  // Using plain password (not hashed)
 
     $sql = "INSERT INTO users (name, email, tel, address, city_code, login_id, passcode) 
-            VALUES ('$name', '$email', '$tel', '$address', '$city_code', '$login_id', '$passcode')";
+            VALUES ('$full_name', '$email', '$tel', '$address', '$city_code', '$login_id', '$passcode')";
 
-if ($conn->query($sql) === TRUE) {
-    header("Location: signin.html?signup=success");
-    exit();
-}
-else {
+    if ($conn->query($sql) === TRUE) {
+        header("Location: signin.html?signup=success");
+        exit();
+    } else {
         echo "Error: " . $conn->error;
     }
 }
