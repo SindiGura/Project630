@@ -1,5 +1,43 @@
 <?php
 session_start();
+include 'ecommerce_db.php'; // Ensure this file connects to your database
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!isset($_SESSION['user'])) {
+        header("Location: error.php?msg=User not logged in");
+        exit();
+    }
+    
+    $user_id = $_SESSION['user'];
+    $total_price = floatval($_POST['total_price']); // Ensure it's properly converted
+    $payment_code = uniqid("PAY-");
+    
+    // Fetch trip price from database
+    $trip_id = 1; // Modify to get actual trip ID
+    $trip_price = 0;
+    
+    $trip_query = $conn->prepare("SELECT Price FROM Trips WHERE Trip_Id = ?");
+    $trip_query->bind_param("i", $trip_id);
+    $trip_query->execute();
+    $trip_query->bind_result($trip_price);
+    $trip_query->fetch();
+    $trip_query->close();
+    
+    $total_price += $trip_price; // Add trip price to grand total
+
+    $stmt = $conn->prepare("INSERT INTO Orders (Total_Price, Payment_Code, User_Id, Trip_Id) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("dsii", $total_price, $payment_code, $user_id, $trip_id);
+
+    if ($stmt->execute()) {
+        header("Location: confirmation.php?order_id=" . $conn->insert_id);
+        exit();
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -11,7 +49,6 @@ session_start();
     <link rel="stylesheet" href="mainstyles.css">
 </head>
 <body>
-
 <header>
     <nav>
         <div class="left-item"> 
@@ -24,13 +61,9 @@ session_start();
             <a href="delivery.php">Delivery</a>
             <a href="cart.php">
                 <div class="icon-cart">
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
-                    </svg>
                     <span id="cart-count">0</span>
                 </div>
             </a>
-
             <?php if (isset($_SESSION['user'])): ?>
                 <a href="logout.php">Log Out</a>
             <?php else: ?>
@@ -39,61 +72,42 @@ session_start();
             <?php endif; ?>
         </div>
     </nav>
-    <br><br><br><br><h1>Payment</h1>
+    <h1>Payment</h1>
 </header>
 
 <main>
     <section class="payment-section">
-
         <div class="invoice-summary">
-            <h3>Invoice Summary</h3><br>
-
-            <div>
-                <table id="cart-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cart-items">
-                        <!-- Cart items will appear here -->
-                    </tbody>
-                </table>
-            </div>
-
-            <br><br>
-            <p><strong>Delivery Fee:</strong> &nbsp; $25.00</p>
-            <p><strong>Grand Total:</strong> &nbsp; <span id="grand-total">$0.00</span></p>
+            <h3>Invoice Summary</h3>
+            <table id="cart-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                    <!-- Items loaded from JavaScript -->
+                </tbody>
+            </table>
+            <p><strong>Delivery Fee:</strong> $25.00</p>
+            <p><strong>Grand Total:</strong> <span id="grand-total">$0.00</span></p>
         </div>
 
         <div class="payment-form">
             <h3>Enter Your Payment Details</h3>
-
-            <form id="payment-form" action="delivery.php" method="GET">
+            <form id="payment-form" method="POST" action="Payments.php">
+                <input type="hidden" name="total_price" id="hidden-total-price">
                 <label for="card-holder-name">Cardholder Name:</label>
-                <br>
                 <input type="text" id="card-holder-name" name="card_holder_name" required>
-
                 <label for="card-number">Card Number:</label>
-                <br>
-                <input type="text" id="card-number" name="card_number" placeholder="XXXX XXXX XXXX XXXX" required>
-
+                <input type="text" id="card-number" name="card_number" required>
                 <label for="expiry-date">Expiry Date:</label>
-                <br>
                 <input type="month" id="expiry-date" name="expiry_date" required>
-
                 <label for="cvv">CVV:</label>
-                <br>
                 <input type="text" id="cvv" name="cvv" required>
-
-                <label for="billing-address">Billing Address:</label>
-                <br>
-                <input type="text" id="billing-address" name="billing_address" placeholder="Enter your billing address" required>
-
                 <button type="submit" class="submit-btn">Complete Payment</button>
             </form>
         </div>
@@ -101,61 +115,44 @@ session_start();
 </main>
 
 <script>
-    // Function to load items from the cart
-    function loadCart() {
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const cartContainer = document.getElementById("cart-items");
-        const cartCount = document.getElementById("cart-count");
-        let grandTotal = 0;
+function loadCart() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartContainer = document.getElementById("cart-items");
+    let grandTotal = 0;
 
-        // If the cart is empty, show a message
-        if (cart.length === 0) {
-            cartContainer.innerHTML = "<tr><td colspan='5'>Your cart is empty.</td></tr>";
-            cartCount.textContent = 0;
-            document.getElementById("grand-total").textContent = "$0.00";
-            return;
-        }
+    if (cart.length === 0) {
+        cartContainer.innerHTML = "<tr><td colspan='4'>Your cart is empty.</td></tr>";
+        document.getElementById("grand-total").textContent = "$0.00";
+        return;
+    }
 
-        // Clear any previous content
-        cartContainer.innerHTML = "";
-
-        // Display all items in the cart
-        cart.forEach((item, index) => {
-            const itemTotal = item.price * item.quantity;
-            grandTotal += itemTotal;
-
-            const row = document.createElement("tr");
-            row.innerHTML = ` 
+    cartContainer.innerHTML = "";
+    cart.forEach((item) => {
+        const itemTotal = item.price * item.quantity;
+        grandTotal += itemTotal;
+        cartContainer.innerHTML += `
+            <tr>
                 <td>${item.name}</td>
                 <td>${item.quantity}</td>
                 <td>$${item.price}</td>
                 <td>$${itemTotal.toFixed(2)}</td>
-                <td><button class="remove-btn" onclick="removeItem(${index})">Remove</button></td>
-            `;
-            cartContainer.appendChild(row);
-        });
+            </tr>
+        `;
+    });
 
-        // Update cart count
-        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-        cartCount.textContent = totalItems;
+    fetch("get_trip_price.php")
+        .then(response => response.json())
+        .then(data => {
+            const tripPrice = parseFloat(data.trip_price) || 0;
+            grandTotal += tripPrice;
+            document.getElementById("grand-total").textContent = "$" + grandTotal.toFixed(2);
+            document.getElementById("hidden-total-price").value = grandTotal.toFixed(2);
+        })
+        .catch(error => console.error("Error fetching trip price:", error));
+}
 
-        // Add delivery fee and update grand total
-        const deliveryFee = 25.00;
-        grandTotal += deliveryFee;
-        document.getElementById("grand-total").textContent = "$" + grandTotal.toFixed(2);
-    }
+window.onload = loadCart;
 
-    // Function to remove an item from the cart
-    function removeItem(index) {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        cart.splice(index, 1); // Remove the item at the given index
-        localStorage.setItem("cart", JSON.stringify(cart));
-        loadCart(); // Reload the cart after item is removed
-    }
-
-    // Load the cart when the page loads
-    loadCart();
 </script>
-
 </body>
 </html>

@@ -52,12 +52,12 @@
                     <p>sgurakuqi@torontomu.ca</p>
                 </div>
                 <div class="team-member">
-                    <img src="images/member2.jpg" alt="Gurloveleen Dhillon">
+                    <img src="images/member2.jpg" alt="Gurloveleen Dhillon" width="100" height="100">
                     <h3>Gurloveleen Dhillon</h3>
                     <p>gurloveleen.dhillon@torontomu.ca</p>
                 </div>
                 <div class="team-member">
-                    <img src="images/member3.jpg" alt="Sayeem Mahfuz">
+                    <img src="images/member3.jpg" alt="Sayeem Mahfuz" width="100" height="100">
                     <h3>Sayeem Mahfuz</h3>
                     <p>s1mahfuz@torontomu.ca</p>
                 </div>
