@@ -121,31 +121,35 @@ while ($branch = $branches_result->fetch_assoc()) {
                         <td>${item.quantity}</td>
                         <td>$${item.price}</td>
                         <td>$${(item.price * item.quantity).toFixed(2)}</td>
-                        <td><button class="remove-btn" data-index="${index}">Remove</button></td>
+                        <td><button class="remove-btn" data-index="\${index}">Remove</button></td>
                     `;
                     cartContainer.appendChild(row);
                 });
 
                 cartCount.textContent = cart.reduce((acc, item) => acc + item.quantity, 0);
                 document.getElementById("checkout").disabled = false;
-
-                document.querySelectorAll(".remove-btn").forEach(button => {
-                    button.addEventListener("click", function() {
-                        let index = this.getAttribute("data-index");
-                        removeItem(index);
-                    });
-                });
             }
 
             function removeItem(index) {
                 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-                cart.splice(index, 1);
-                localStorage.setItem("cart", JSON.stringify(cart));
-                loadCart();
+                index = parseInt(index); // Ensure index is a number
+                if (!isNaN(index) && index >= 0 && index < cart.length) {
+                    cart.splice(index, 1);
+                    localStorage.setItem("cart", JSON.stringify(cart));
+                    loadCart(); // Refresh the cart UI
+                }
             }
 
-            loadCart();
-        });
+            // Attach event listener to cart items (Event Delegation)
+            document.getElementById("cart-items").addEventListener("click", function(event) {
+                if (event.target.classList.contains("remove-btn")) {
+                    let index = event.target.getAttribute("data-index");
+                    removeItem(index);
+                }
+            });
+
+    loadCart(); // Load cart when page loads
+});
 
     </script>
 </head>

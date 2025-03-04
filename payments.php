@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $payment_code = uniqid("PAY-");
     
     // Fetch trip price from database
-    $trip_id = 1; // Modify to get actual trip ID
+    $trip_id = 1; // Modify to get the actual trip ID if needed
     $trip_price = 0;
     
     $trip_query = $conn->prepare("SELECT Price FROM Trips WHERE Trip_Id = ?");
@@ -23,7 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $trip_query->fetch();
     $trip_query->close();
     
-    $total_price += $trip_price; // Add trip price to grand total
+    // Add the trip (delivery) price to the total
+    // If you have a separate base fee you want to add, do:  $total_price += 25 + $trip_price;
+    $total_price += $trip_price;
 
     $stmt = $conn->prepare("INSERT INTO Orders (Total_Price, Payment_Code, User_Id, Trip_Id) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("dsii", $total_price, $payment_code, $user_id, $trip_id);
@@ -88,26 +90,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <th>Total</th>
                     </tr>
                 </thead>
-                <tbody id="cart-items">
-                    <!-- Items loaded from JavaScript -->
-                </tbody>
+                <tbody id="cart-items"><!-- Items loaded from JavaScript --></tbody>
             </table>
-            <p><strong>Delivery Fee:</strong> $25.00</p>
+
+            <!-- Delivery fee is dynamically replaced with the actual trip cost from get_trip_price.php -->
+            <p><strong>Delivery Fee:</strong> <span id="delivery-fee">$0.00</span></p>
+            
             <p><strong>Grand Total:</strong> <span id="grand-total">$0.00</span></p>
         </div>
 
         <div class="payment-form">
             <h3>Enter Your Payment Details</h3>
-            <form id="payment-form" method="POST" action="Payments.php">
+            <form id="payment-form" method="POST" action="payments.php">
                 <input type="hidden" name="total_price" id="hidden-total-price">
+                
                 <label for="card-holder-name">Cardholder Name:</label>
                 <input type="text" id="card-holder-name" name="card_holder_name" required>
+
                 <label for="card-number">Card Number:</label>
                 <input type="text" id="card-number" name="card_number" required>
+
                 <label for="expiry-date">Expiry Date:</label>
                 <input type="month" id="expiry-date" name="expiry_date" required>
+
                 <label for="cvv">CVV:</label>
                 <input type="text" id="cvv" name="cvv" required>
+
                 <button type="submit" class="submit-btn">Complete Payment</button>
             </form>
         </div>
@@ -122,10 +130,12 @@ function loadCart() {
 
     if (cart.length === 0) {
         cartContainer.innerHTML = "<tr><td colspan='4'>Your cart is empty.</td></tr>";
+        document.getElementById("delivery-fee").textContent = "$0.00";
         document.getElementById("grand-total").textContent = "$0.00";
         return;
     }
 
+    // Calculate total from all cart items
     cartContainer.innerHTML = "";
     cart.forEach((item) => {
         const itemTotal = item.price * item.quantity;
@@ -140,11 +150,19 @@ function loadCart() {
         `;
     });
 
+    // Fetch the trip/delivery fee
     fetch("get_trip_price.php")
         .then(response => response.json())
         .then(data => {
-            const tripPrice = parseFloat(data.trip_price) || 0;
-            grandTotal += tripPrice;
+            const deliveryFee = parseFloat(data.trip_price) || 0;
+            
+            // Display the fee
+            document.getElementById("delivery-fee").textContent = "$" + deliveryFee.toFixed(2);
+
+            // Add it to the total
+            grandTotal += deliveryFee;
+
+            // Show updated total
             document.getElementById("grand-total").textContent = "$" + grandTotal.toFixed(2);
             document.getElementById("hidden-total-price").value = grandTotal.toFixed(2);
         })
@@ -152,7 +170,6 @@ function loadCart() {
 }
 
 window.onload = loadCart;
-
 </script>
 </body>
 </html>
