@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delivery Route</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyClYvSlHYsrJgaOdeDeSuRtM6ECjyu6qwk&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=INSERTMAPSAPIKEY&libraries=places"></script>
     <link rel="stylesheet" href="mainstyles.css">
     <style>
         #map {
